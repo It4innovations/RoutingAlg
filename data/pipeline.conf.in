@@ -1,0 +1,22 @@
+[data]
+routing_index_path=@HDF_INDEX_PATH@
+speed_profiles_path=@HDF_PROFILE_PATH@
+
+[parameters]
+# Dijkstra = 1
+# BiDijkstra = 2
+# Astar = 3
+# BiAstar = 4
+# TDDijkstra = 5
+# Alternatives = 6
+routing_algorithm=1
+
+alternatives=0
+alternative_count=10
+ptdr=0
+ptdr_samples=1000
+
+# Average = 1,
+# Median = 2
+reordering_type=1
+

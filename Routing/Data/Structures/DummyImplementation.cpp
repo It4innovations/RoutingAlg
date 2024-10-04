@@ -1,0 +1,7 @@
+#include "EdgeData.h"
+#include "EdgeRaw.h"
+#include "NodePosition.h"
+#include "NodeRaw.h"
+#include "RestrictedTurn.h"
+#include "RoutingIndexInfo.h"
+#include "ShortcutPosition.h"
