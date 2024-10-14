@@ -7,7 +7,7 @@ The static routing library contains a set of routing algorithms which operate on
 - A-star
 - Bidirectional A-star
 
-- Alternatives (Plateau)
+- Plateau (Alternatives)
 
 - Probabilistic Time-Dependent Routing
 
