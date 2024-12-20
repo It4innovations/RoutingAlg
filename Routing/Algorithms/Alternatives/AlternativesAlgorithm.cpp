@@ -15,15 +15,23 @@ std::unique_ptr<std::vector<Result>> Routing::Algorithms::AlternativesAlgorithm:
 
     long baseTime = watch.GetElapsed();
 
-    auto *results = new std::vector<Result>();
+    auto results = std::make_unique<std::vector<Result>>();
     results->reserve(alternatives.size());
 
-    for (auto result : alternatives) {
-        results->push_back(Result(result, result.back().time,
-                                  result.back().length, baseTime));
+    for (auto& result : alternatives) {
+        if(!result.empty()){
+            if (result.back().time < std::numeric_limits<float>::infinity()){
+                results->emplace_back(result, result.back().time,
+                                      result.back().length, baseTime);
+            }
+        }
     }
 
-    return std::unique_ptr<std::vector<Result>>(results);
+    if(results->empty()){
+        return nullptr;
+    }
+
+    return results;
 }
 
 std::unique_ptr<std::vector<Result>> Routing::Algorithms::AlternativesAlgorithm::GetResults(int startId, int endId,
