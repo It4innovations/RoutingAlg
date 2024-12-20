@@ -37,7 +37,7 @@ namespace Routing {
 
 
             friend std::ostream &operator<<(std::ostream &os, const Result &res) {
-                os << "Results: " << res.results->size() << ", Travel time: " <<
+                os << "Segments: " << res.results->size() << ", Travel time: " <<
                    res.travelTime << ", Travel length: " << res.travelLength <<
                    ", Computing time: " << res.computingTime << std::endl;
 
