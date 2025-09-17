@@ -35,7 +35,7 @@ namespace Routing {
                                         AlgorithmSettings settings = AlgorithmSettings())
                     : Algorithm(std::move(routingGraph), settings) {
 
-                this->storage = move(storage);
+                this->storage = std::move(storage);
                 this->oneSpeedIntervalInSeconds = this->storage->GetIntervalLength();
             };
 

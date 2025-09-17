@@ -53,7 +53,7 @@ Routing::Hdf::DataIndex::DataIndex(const H5::H5File &h5file, Routing::Hdf::ELoad
         delete[] dimSizesTmpEd;
 
     }
-    catch (const H5::Exception e) {
+    catch (const H5::Exception& e) {
         std::cerr << "DataIndex constructor\n" << e.getDetailMsg();
         exit(EXIT_FAILURE);
     }

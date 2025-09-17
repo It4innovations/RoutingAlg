@@ -188,7 +188,7 @@ Routing::Algorithms::BidirectionalAstar::BidirectionalAstar(std::shared_ptr<Grap
                                                             Routing::Algorithms::HeuristicTravelCostCalculator *travelCostCalculator,
                                                             Routing::Algorithms::TravelTimeCalculator *travelTimeCalculator)
         :
-        Routing::Algorithms::GoalDirectedAlgorithm(move(routingGraph), settings, travelCostCalculator,
+        Routing::Algorithms::GoalDirectedAlgorithm(std::move(routingGraph), settings, travelCostCalculator,
                                                    travelTimeCalculator) {}
 
 

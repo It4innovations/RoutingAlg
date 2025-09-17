@@ -285,7 +285,7 @@ int Routing::Tests::ParseTestLine(string line) {
     int fromIndex = 0;
     int tokensCount = 1;
 
-    string tokens[tokensCount];
+    std::vector<string> tokens(tokensCount);
 
     for (int i = 0; i < tokensCount; i++) {
         std::string delimiter = " ";

@@ -8,6 +8,7 @@ namespace Routing {
         class ReorderingBase {
         public:
             ReorderingBase(const std::shared_ptr<Routing::Data::GraphMemory> &routingGraph);
+            virtual ~ReorderingBase() = default;
 
 			virtual vector<long long int> Reorder(const std::vector<ReorderInput> &reorderInput,
 												  std::vector<long long> &lastRoute, const long long int currentTmw, const long long int tmwSize) = 0;

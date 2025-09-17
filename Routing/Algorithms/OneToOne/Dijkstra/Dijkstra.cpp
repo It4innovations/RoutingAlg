@@ -83,5 +83,5 @@ Routing::Algorithms::Dijkstra::Dijkstra(std::shared_ptr<GraphMemory> routingGrap
                                         Routing::Algorithms::AlgorithmSettings settings,
                                         TravelCostCalculator *travelCostCalculator,
                                         TravelTimeCalculator *travelTimeCalculator) :
-        Routing::Algorithms::StaticRoutingAlgorithm(move(routingGraph), settings, travelCostCalculator,
+        Routing::Algorithms::StaticRoutingAlgorithm(std::move(routingGraph), settings, travelCostCalculator,
                                                     travelTimeCalculator) {}

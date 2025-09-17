@@ -134,7 +134,7 @@ namespace Routing {
                 }
 
                 for (int i = 0; i < limit; ++i) {
-                    cout << this->counter << " " << data[i].first << " " << data[i].second << endl;
+                    cout << this->count << " " << data[i].first << " " << data[i].second << endl;
                 }
 
                 cout << endl;

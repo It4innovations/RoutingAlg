@@ -35,12 +35,12 @@ Routing::Pipeline::RoutingRequest::LoadRequests(const std::string file, int depa
 
             requests.emplace_back(lineNum, origin, destination);
         }
-        catch (std::out_of_range e) {
+        catch (const std::out_of_range& e) {
             std::cerr << "Cannot parse line (out of range) " << lineNum << std::endl;
             std::cerr << line << std::endl;
             std::cerr << e.what() << std::endl;
         }
-        catch (std::invalid_argument e) {
+        catch (const std::invalid_argument& e) {
             std::cerr << "Cannot parse line (invalid value) " << lineNum << std::endl;
             std::cerr << line << std::endl;
             std::cerr << e.what() << std::endl;

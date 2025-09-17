@@ -24,7 +24,7 @@ Routing::Hdf::DataIndexPart::DataIndexPart(const H5::H5File &h5file, char id_nam
         this->nodeCount = dimSizesTmp[0];
         delete[] dimSizesTmp;
     }
-    catch (const H5::Exception e) {
+    catch (const H5::Exception& e) {
         std::cerr << "DataIndexPart constructor\n" << e.getDetailMsg();
     }
 
@@ -54,19 +54,19 @@ std::vector<NodeRaw> Routing::Hdf::DataIndexPart::GetNodes(void) const {
                 Routing::Hdf::nodeDataSetName);
         nodesDS.read(nodes.data(), IndexH5Type::NodeRawType());
     }
-    catch (H5::FileIException e) {
+    catch (const H5::FileIException& e) {
         std::cerr << "ERROR: Cannot open file. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::DataSetIException e) {
+    catch (const H5::DataSetIException& e) {
         std::cerr << "ERROR: Cannot open dataset. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::GroupIException e) {
+    catch (const H5::GroupIException& e) {
         std::cerr << "ERROR: Cannot open group. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::DataSpaceIException e) {
+    catch (const H5::DataSpaceIException& e) {
         std::cerr << "ERROR: Cannot open dataspace. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -83,19 +83,19 @@ std::vector<EdgeRaw> Routing::Hdf::DataIndexPart::GetEdges(void) const {
                 Routing::Hdf::edgeDataSetName);
         edgesDS.read(edgesRaw.data(), IndexH5Type::EdgeRawType());
     }
-    catch (H5::FileIException e) {
+    catch (const H5::FileIException& e) {
         std::cerr << "ERROR: Cannot open file. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::DataSetIException e) {
+    catch (const H5::DataSetIException& e) {
         std::cerr << "ERROR: Cannot open dataset. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::GroupIException e) {
+    catch (const H5::GroupIException& e) {
         std::cerr << "ERROR: Cannot open group. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::DataSpaceIException e) {
+    catch (const H5::DataSpaceIException& e) {
         std::cerr << "ERROR: Cannot open dataspace. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -121,19 +121,19 @@ std::vector<EdgeRaw> Routing::Hdf::DataIndexPart::GetEdges(int index, int count)
         delete[] start;
         delete[] offset;
     }
-    catch (H5::FileIException e) {
+    catch (const H5::FileIException& e) {
         std::cerr << "ERROR: Cannot open file. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::DataSetIException e) {
+    catch (const H5::DataSetIException& e) {
         std::cerr << "ERROR: Cannot open dataset. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::GroupIException e) {
+    catch (const H5::GroupIException& e) {
         std::cerr << "ERROR: Cannot open group. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::DataSpaceIException e) {
+    catch (const H5::DataSpaceIException& e) {
         std::cerr << "ERROR: Cannot open dataspace. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -166,19 +166,19 @@ NodeRaw Routing::Hdf::DataIndexPart::GetNode(int index) const {
         delete[] start;
         delete[] offset;
     }
-    catch (H5::FileIException e) {
+    catch (const H5::FileIException& e) {
         std::cerr << "ERROR: Cannot open file. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::DataSetIException e) {
+    catch (const H5::DataSetIException& e) {
         std::cerr << "ERROR: Cannot open dataset. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::GroupIException e) {
+    catch (const H5::GroupIException& e) {
         std::cerr << "ERROR: Cannot open group. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::DataSpaceIException e) {
+    catch (const H5::DataSpaceIException& e) {
         std::cerr << "ERROR: Cannot open dataspace. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -203,19 +203,19 @@ EdgeRaw Routing::Hdf::DataIndexPart::GetEdge(int index) const {
         delete[] start;
         delete[] offset;
     }
-    catch (H5::FileIException e) {
+    catch (const H5::FileIException& e) {
         std::cerr << "ERROR: Cannot open file. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::DataSetIException e) {
+    catch (const H5::DataSetIException& e) {
         std::cerr << "ERROR: Cannot open dataset. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::GroupIException e) {
+    catch (const H5::GroupIException& e) {
         std::cerr << "ERROR: Cannot open group. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }
-    catch (H5::DataSpaceIException e) {
+    catch (const H5::DataSpaceIException& e) {
         std::cerr << "ERROR: Cannot open dataspace. " << e.getDetailMsg() << std::endl;
         exit(EXIT_FAILURE);
     }

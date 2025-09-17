@@ -251,7 +251,7 @@ Routing::Algorithms::BidirectionalDijkstra::BidirectionalDijkstra(std::shared_pt
                                                                   TravelCostCalculator *travelCostCalculator,
                                                                   TravelTimeCalculator *travelTimeCalculator)
         :
-        Routing::Algorithms::StaticRoutingAlgorithm(move(routingGraph), settings, travelCostCalculator,
+        Routing::Algorithms::StaticRoutingAlgorithm(std::move(routingGraph), settings, travelCostCalculator,
                                                     travelTimeCalculator) {}
 
 

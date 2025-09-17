@@ -1,17 +1,21 @@
 
-#include <omp.h>
 #include <limits>
+
+#ifdef USE_OPENMP
+#include <omp.h>
+#endif
 
 #include "MonteCarloProbability.h"
 #include "../../../Data/Utility/Definitions.h"
 
 #define ALIGN 64
 
-#ifdef USE_MKL
-#include <mkl.h>
-#else
 
 #include <random>
+
+#ifdef USE_MKL
+
+#include <mkl.h>
 
 #endif
 

@@ -50,7 +50,7 @@ namespace Routing {
                 return *this;
             }
 
-            virtual bool operator==(const SegmentBase &other) {
+            virtual bool operator==(const SegmentBase &other) const {
                 return this->edgeId == other.edgeId && this->time == other.time && GeometryEquals(*other.geometry);
             }
 
@@ -67,7 +67,7 @@ namespace Routing {
             virtual ~SegmentBase() {};
 
         protected:
-            bool GeometryEquals(const std::vector<GpsPoint> &other);
+            bool GeometryEquals(const std::vector<GpsPoint> &other) const;
         };
     }
 }

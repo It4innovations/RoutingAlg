@@ -72,7 +72,7 @@ google::dense_hash_map<int, float> Routing::Algorithms::AlternativesPlateauTDPlu
                 unsigned long index = (unsigned long) startTime / oneSpeedIntervalInSeconds;
                 edgeSpeed = profile->at(index);
             }
-            catch (Routing::Exception::ProfileNotFound e) {
+            catch (const Routing::Exception::ProfileNotFound& e) {
                 travelTime = Routing::Algorithms::TD::CalculateCostSec(*edge, edge->GetSpeed());
                 edgeSpeed = (float) (edge->GetSpeed() / 3.6);
             }

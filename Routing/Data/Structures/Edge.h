@@ -41,7 +41,16 @@ namespace Routing {
         };
 
         Edge() = default;
-        Edge(Edge &&other) = delete;
+        Edge(Edge &&other) noexcept : 
+                edgeId(other.edgeId),
+                length(other.length),
+                edgeData(other.edgeData),
+                endNode(other.endNode),
+                startNodePtr(other.startNodePtr),
+                speed(other.speed),
+                origin_speed(other.origin_speed) {
+            // Move constructor implementation
+        }
 
         Edge(const Edge &other) :
                 edgeData(other.edgeData),
