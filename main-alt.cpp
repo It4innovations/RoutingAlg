@@ -1,7 +1,6 @@
 #include <iostream>
 #include "Routing/Tests/IOUtils.h"
 #include "Routing/Data/Probability/ProfileStorageHDF5.h"
-#include "Tests/DataPaths.h"
 #include "Routing/Algorithms/Alternatives/AlternativesPlateauAlgorithm.h"
 
 
