@@ -5,7 +5,6 @@
 #include <H5Cpp.h>
 #include <memory>
 #include "DiffEvoIndividual.h"
-#include "../Tests/DataPaths.h"
 #include "../Routing/Hdf/DataIndex.h"
 #include "../Routing/Data/Indexes/GraphMemory.h"
 #include "../Routing/Algorithms/Base/StaticRoutingAlgorithm.h"
