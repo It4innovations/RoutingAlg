@@ -22,6 +22,8 @@ namespace Routing {
             explicit Algorithm(std::shared_ptr<GraphMemory> routingGraph,
                     AlgorithmSettings settings = AlgorithmSettings()) : routingGraph(std::move(routingGraph)),
                                                                           settings(settings) {}
+            
+            virtual ~Algorithm() = default;
 
             std::shared_ptr<Routing::Data::GraphMemory> GetRoutingGraph() {
                 return routingGraph;

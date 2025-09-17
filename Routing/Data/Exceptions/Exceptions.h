@@ -48,14 +48,17 @@ namespace Routing {
         class EdgeNotFoundException : public std::exception {
         public:
             EdgeNotFoundException(int id) :
-                    id(id) {};
+                    id(id) {
+                errorMessage = "EdgeId " + std::to_string(this->id) + " not found\n";
+            };
 
             virtual const char *what() const throw() {
-                return std::string("EdgeId " + std::to_string(this->id) + " not found\n").c_str();
+                return errorMessage.c_str();
             }
 
         private:
             int id;
+            std::string errorMessage;
         };
     }
 

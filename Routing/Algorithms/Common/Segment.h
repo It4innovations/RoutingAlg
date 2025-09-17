@@ -46,20 +46,21 @@ namespace Routing {
                 return *this;
             }
 
-            bool operator==(const SegmentBase &other) override {
-                const auto *otherSegment = dynamic_cast<const Segment *>(&other);
-
-                if (otherSegment) {
-                    return this->edgeId == otherSegment->edgeId &&
-                           this->time == otherSegment->time &&
-                           GeometryEquals(*otherSegment->geometry) &&
-                           this->nodeId1 == otherSegment->nodeId1 &&
-                           this->nodeId2 == otherSegment->nodeId2 &&
-                           this->length == otherSegment->length &&
-                           this->isTollWay == otherSegment->isTollWay;
-                }
-
-                return false;
+            // Hidden friend function for equality comparison
+            friend bool operator==(const Segment& lhs, const Segment& rhs) {
+                return lhs.edgeId == rhs.edgeId &&
+                       lhs.time == rhs.time &&
+                       lhs.GeometryEquals(*rhs.geometry) &&
+                       lhs.nodeId1 == rhs.nodeId1 &&
+                       lhs.nodeId2 == rhs.nodeId2 &&
+                       lhs.length == rhs.length &&
+                       lhs.isTollWay == rhs.isTollWay;
+            }
+            
+            // Override the base class equality operator
+            bool operator==(const SegmentBase& other) const override {
+                const auto* otherSegment = dynamic_cast<const Segment*>(&other);
+                return otherSegment && (*this == *otherSegment);
             }
 
             friend std::ostream &operator<<(std::ostream &os, const Segment &seg) {

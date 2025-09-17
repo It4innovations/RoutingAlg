@@ -90,5 +90,5 @@ Routing::Algorithms::StaticRoutingAlgorithm::StaticRoutingAlgorithm(std::shared_
                                                                     Routing::Algorithms::AlgorithmSettings settings,
                                                                     TravelCostCalculator *travelCostCalculator,
                                                                     TravelTimeCalculator *travelTimeCalculator)
-        : Algorithm(move(routingGraph), settings), costCalculator(travelCostCalculator),
+        : Algorithm(std::move(routingGraph), settings), costCalculator(travelCostCalculator),
           timeCalculator(travelTimeCalculator) {}

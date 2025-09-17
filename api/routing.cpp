@@ -183,7 +183,7 @@ ARPiResult advance_routing_part1(void *graph, void *profile_storage,
     }
     routes.clear(); // clear invalided elements as they were moved
 
-    return ARPiResult{edge_ids.size(), edge_ids_, routes_with_prob_metadata};
+    return ARPiResult{static_cast<unsigned int>(edge_ids.size()), edge_ids_, routes_with_prob_metadata};
 }
 
 using Time_t = long long;
@@ -211,7 +211,7 @@ Route advance_routing_part2(
         int edge_id = segment.edgeId;
         auto end = cls_.load + cls_.count;
         auto load_on_segment = std::find_if(cls_.load, end, [edge_id](LoadOnSegment& segment_load) {
-            return segment_load.segment_id == edge_id;
+            return segment_load.segment_id == static_cast<u32>(edge_id);
         });
         if (load_on_segment != end) {
           std::vector<std::pair<Time_t, Count_t>> load; // TODO: make it more readable
@@ -268,7 +268,7 @@ Route advance_routing_part2(
     {
         segments.resize(result.count);
         result.data = segments.data();
-        for (int i = 0; i < route.size(); i++)
+    for (size_t i = 0; i < route.size(); i++)
         {
             result.data[i].start = static_cast<uint32_t>(route[i].nodeId1);
             result.data[i].end = static_cast<uint32_t>(route[i].nodeId2);

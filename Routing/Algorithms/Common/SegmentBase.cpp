@@ -32,7 +32,7 @@ void Routing::Algorithms::SegmentBase::SetGeometry(std::vector<GpsPoint> &geo) {
     this->geometry.reset(new std::vector<GpsPoint>(geo));
 }
 
-bool Routing::Algorithms::SegmentBase::GeometryEquals(const std::vector<GpsPoint> &other) {
+bool Routing::Algorithms::SegmentBase::GeometryEquals(const std::vector<GpsPoint> &other) const {
     if (geometry->size() != other.size()) return false;
     else {
         for (unsigned int i = 0; i < geometry->size(); i++) {

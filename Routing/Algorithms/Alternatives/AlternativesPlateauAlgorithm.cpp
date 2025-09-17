@@ -1,5 +1,4 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "openmp-use-default-none"
+// OpenMP pragmas are handled by the compiler flags
 #include "AlternativesPlateauAlgorithm.h"
 
 #define TENPERCENT /10
@@ -7,6 +6,8 @@
 
 std::vector<std::vector<Segment>> Routing::Algorithms::AlternativesPlateauAlgorithm::GetRoutes(
         int startId, int endId, unsigned int maxRoutes, bool multiThreading, int startTime) {
+
+     google::dense_hash_map<int, float> edgesSpeed = this->edgesSpeed;
 
     VisitedNodeHashMap closedSetForth;
     closedSetForth.set_empty_key(std::numeric_limits<int>::min());
@@ -58,7 +59,7 @@ std::vector<std::vector<Segment>> Routing::Algorithms::AlternativesPlateauAlgori
         Routing::Algorithms::AlternativesPlateauTDPlugin alternativesPlateauTDPlugin(this->routingGraph,
                                                                                      this->profileStorage,
                                                                                      this->settings);
-
+        std::cout << "Using this ...." << std::endl;
         edgesSpeed = alternativesPlateauTDPlugin.GetEdgesSpeedValue(startId, endId, filterGeometryRootTD,
                                                                     settings.filterSettings.allFilterOff, startTime);
 
@@ -641,7 +642,7 @@ Routing::Algorithms::AlternativesPlateauAlgorithm::AlternativesPlateauAlgorithm(
         TravelTimeCalculator *travelTimeCalculator)
         :
         AlternativesAlgorithm(std::move(routingGraph), settings, travelCostCalculator, travelTimeCalculator) {
-    this->profileStorage = move(storage);
+    this->profileStorage = std::move(storage);
     this->alternativesTDPluginOn = settings.alternativesTDPluginOn;
     this->alternativesRouteTDRecalculateOn = settings.alternativesRouteTDRecalculateOn;
     this->altCountsForRecalculation = settings.altCountsForRecalculation;
@@ -649,5 +650,3 @@ Routing::Algorithms::AlternativesPlateauAlgorithm::AlternativesPlateauAlgorithm(
     this->similarityParMultiplyConst = settings.similarityParMultiplyConst;
     this->similarityPercent = settings.similarityPercent;
 }
-
-#pragma clang diagnostic pop
