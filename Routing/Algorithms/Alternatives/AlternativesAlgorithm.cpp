@@ -1,7 +1,7 @@
 #include "AlternativesAlgorithm.h"
 
 std::unique_ptr<std::vector<Result>> Routing::Algorithms::AlternativesAlgorithm::GetResults(
-        int startId, int endId, unsigned int maxRoutes, bool multiThreading, int startTime) {
+        int startId, int endId, unsigned int maxRoutes, bool multiThreading, int startTime) const {
 
     TimeWatch watch(true);
 
@@ -35,22 +35,14 @@ std::unique_ptr<std::vector<Result>> Routing::Algorithms::AlternativesAlgorithm:
 }
 
 std::unique_ptr<std::vector<Result>> Routing::Algorithms::AlternativesAlgorithm::GetResults(int startId, int endId,
-                                                                                            int startTime) {
+                                                                                            int startTime) const {
     return GetResults(startId, endId, 3, true, startTime);
 }
 
-Routing::Algorithms::TravelCostCalculator *Routing::Algorithms::AlternativesAlgorithm::GetTravelCostCalculator() {
-    return costCalculator;
-}
-
-Routing::Algorithms::TravelTimeCalculator *Routing::Algorithms::AlternativesAlgorithm::GetTravelTimeCalculator() {
-    return timeCalculator;
-}
-
 Routing::Algorithms::AlternativesAlgorithm::AlternativesAlgorithm(std::shared_ptr<GraphMemory> routingGraph,
-                                                                  Routing::Algorithms::AlgorithmSettings settings,
-                                                                  TravelCostCalculator *travelCostCalculator,
-                                                                  TravelTimeCalculator *travelTimeCalculator)
+                                                                  const Routing::Algorithms::AlgorithmSettings &settings,
+                                                                  const TravelCostCalculator *travelCostCalculator,
+                                                                  const TravelTimeCalculator *travelTimeCalculator)
         : Algorithm(std::move(routingGraph), settings), costCalculator(travelCostCalculator),
           timeCalculator(travelTimeCalculator) {}
 

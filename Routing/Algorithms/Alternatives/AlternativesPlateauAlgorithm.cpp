@@ -5,9 +5,7 @@
 #define FIVEPERCENT /20
 
 std::vector<std::vector<Segment>> Routing::Algorithms::AlternativesPlateauAlgorithm::GetRoutes(
-        int startId, int endId, unsigned int maxRoutes, bool multiThreading, int startTime) {
-
-     google::dense_hash_map<int, float> edgesSpeed = this->edgesSpeed;
+        int startId, int endId, unsigned int maxRoutes, bool multiThreading, int startTime) const {
 
     VisitedNodeHashMap closedSetForth;
     closedSetForth.set_empty_key(std::numeric_limits<int>::min());
@@ -49,6 +47,7 @@ std::vector<std::vector<Segment>> Routing::Algorithms::AlternativesPlateauAlgori
 
     openSetBack.Add(0, endNode.id);
 
+    google::dense_hash_map<int, float> edgesSpeed;
     if (alternativesTDPluginOn) {
         std::clock_t start;
         double duration;
@@ -74,12 +73,12 @@ std::vector<std::vector<Segment>> Routing::Algorithms::AlternativesPlateauAlgori
     {
 #pragma omp section
         {
-            this->DijkstraForth(openSetForth, closedSetForth, filterGeometryRootForth,
+            this->DijkstraForth(openSetForth, closedSetForth, filterGeometryRootForth, edgesSpeed,
                                 settings.filterSettings.allFilterOff);
         }
 #pragma omp section
         {
-            this->DijkstraBack(openSetBack, closedSetBack, filterGeometryRootBack,
+            this->DijkstraBack(openSetBack, closedSetBack, filterGeometryRootBack, edgesSpeed,
                                settings.filterSettings.allFilterOff);
         }
     }
@@ -125,7 +124,7 @@ std::vector<std::vector<Segment>> Routing::Algorithms::AlternativesPlateauAlgori
 }
 
 void
-Routing::Algorithms::AlternativesPlateauAlgorithm::GetStartInfo(Node &startNode, Node &endNode, bool &longDistance) {
+Routing::Algorithms::AlternativesPlateauAlgorithm::GetStartInfo(Node &startNode, Node &endNode, bool &longDistance) const {
     int highestFRCoutForth = 7;
     int highestFRCinBack = 7;
 
@@ -161,7 +160,7 @@ Routing::Algorithms::AlternativesPlateauAlgorithm::GetStartInfo(Node &startNode,
 }
 
 Routing::Algorithms::GraphFilterGeometry Routing::Algorithms::AlternativesPlateauAlgorithm::InitiateFilters(
-        Node startNode, Node endNode, Node startPositionNode, bool longDistance) {
+        Node startNode, Node endNode, Node startPositionNode, bool longDistance) const {
 
     if (!settings.filterSettings.allFilterOff) {
         GraphFilterGeometry filterGeometryRoot(settings.filterSettings.typeOfFilter, startNode, endNode);
@@ -206,7 +205,8 @@ Routing::Algorithms::GraphFilterGeometry Routing::Algorithms::AlternativesPlatea
 void Routing::Algorithms::AlternativesPlateauAlgorithm::DijkstraForth(BinHeap &openSetForth,
                                                                       VisitedNodeHashMap &closedSetForth,
                                                                       GraphFilterGeometry plateauFilter,
-                                                                      bool allFilterOff) {
+                                                                      const google::dense_hash_map<int, float> &edgesSpeed,
+                                                                      bool allFilterOff) const {
     //allFilterOff = true;
 
     while (openSetForth.Count() != 0) {
@@ -276,7 +276,8 @@ void Routing::Algorithms::AlternativesPlateauAlgorithm::DijkstraForth(BinHeap &o
 void Routing::Algorithms::AlternativesPlateauAlgorithm::DijkstraBack(BinHeap &openSetBack,
                                                                      VisitedNodeHashMap &closedSetBack,
                                                                      GraphFilterGeometry plateauFilter,
-                                                                     bool allFilterOff) {
+                                                                     const google::dense_hash_map<int, float> &edgesSpeed,
+                                                                     bool allFilterOff) const {
 
     //allFilterOff = true;
 
@@ -346,7 +347,7 @@ void Routing::Algorithms::AlternativesPlateauAlgorithm::DijkstraBack(BinHeap &op
 
 std::vector<Routing::Algorithms::RouteSolution> Routing::Algorithms::AlternativesPlateauAlgorithm::FindPlateaus(
         VisitedNodeHashMap &closedSetForth, VisitedNodeHashMap &closedSetBack, int startId, int endId,
-        GraphFilterGeometry::FilterType typeOfFilter, bool multiThreading) {
+        GraphFilterGeometry::FilterType typeOfFilter, bool multiThreading) const {
 
     bool firstSolution = true;
     float solutionTimeLock = 0;
@@ -423,7 +424,7 @@ void Routing::Algorithms::AlternativesPlateauAlgorithm::ForthPartPlateau(Visited
                                                                          VisitedNodeHashMap &closedSetBack,
                                                                          HashSet &processedNodeIds, int actualId,
                                                                          int nextId, int &plateauLength,
-                                                                         float &plateauTime) {
+                                                                         float &plateauTime) const {
 
     while (nextId != -1) {
 
@@ -454,7 +455,7 @@ void Routing::Algorithms::AlternativesPlateauAlgorithm::BackPartPlateau(VisitedN
                                                                         VisitedNodeHashMap &closedSetBack,
                                                                         HashSet &processedNodeIds, int actualId,
                                                                         int previousId, int &plateauLength,
-                                                                        float &plateauTime) {
+                                                                        float &plateauTime) const {
 
     while (previousId != -1) {
 
@@ -485,7 +486,7 @@ void Routing::Algorithms::AlternativesPlateauAlgorithm::AddAlternativeSolution(
         VisitedNodeHashMap &closedSetForth, VisitedNodeHashMap &closedSetBack, int startId, int endId,
         int intersectionId,
         int plateauLength, float plateauTime, std::vector<Routing::Algorithms::RouteSolution> &solutions,
-        float &solutionTime, bool multiThreading) {
+        float &solutionTime, bool multiThreading) const {
 
     Routing::Algorithms::RouteInfo routeInfoForth(0, 0);
 
@@ -518,7 +519,7 @@ void Routing::Algorithms::AlternativesPlateauAlgorithm::AddAlternativeSolution(
 
 void Routing::Algorithms::AlternativesPlateauAlgorithm::RoutesRecalculateBySpeedProfile(
         std::vector<std::vector<Segment>> &results,
-        int startTime) {
+        int startTime) const {
     for (auto &route : results) {
         std::cout << "Route (Len: " << route.back().length << ") Time: " << route.back().time;
         Routing::Algorithms::TD::CalculateRoadCostByProfile(route, startTime, this->routingGraph, this->profileStorage);
@@ -527,7 +528,7 @@ void Routing::Algorithms::AlternativesPlateauAlgorithm::RoutesRecalculateBySpeed
 }
 
 std::vector<std::vector<Segment>> Routing::Algorithms::AlternativesPlateauAlgorithm::AlternativesRecalculate(
-        int startTime, unsigned int maxRoutes, std::vector<std::vector<Segment>> results) {
+        int startTime, unsigned int maxRoutes, std::vector<std::vector<Segment>> results) const {
 
     RoutesRecalculateBySpeedProfile(results, startTime);
     std::sort(results.begin(), results.end(), [](const std::vector<Segment> &info1, const std::vector<Segment> &info2) {
@@ -548,7 +549,7 @@ std::vector<std::vector<Segment>> Routing::Algorithms::AlternativesPlateauAlgori
 }
 
 std::vector<std::vector<Segment>> Routing::Algorithms::AlternativesPlateauAlgorithm::AlternativesSimilarityParameter(
-        std::vector<std::vector<Segment>> &results, double percentageSimilarity, int countResutls) {
+        std::vector<std::vector<Segment>> &results, double percentageSimilarity, int countResults) const {
     if (results.empty()) {
         return results;
     }
@@ -567,7 +568,7 @@ std::vector<std::vector<Segment>> Routing::Algorithms::AlternativesPlateauAlgori
 
     newResultsLenght.push_back(len);
 
-    for (int i = 1; (i < (int) results.size()) && (countCorrectResults != countResutls); i++) {
+    for (int i = 1; (i < (int) results.size()) && (countCorrectResults != countResults); i++) {
         double lenCurrentPath = results[i][(results[i].size()) - 1].length;;
         bool addResult = true;
         int indexNewResults = 0;
@@ -641,12 +642,13 @@ Routing::Algorithms::AlternativesPlateauAlgorithm::AlternativesPlateauAlgorithm(
         Routing::Algorithms::AlgorithmSettings settings, TravelCostCalculator *travelCostCalculator,
         TravelTimeCalculator *travelTimeCalculator)
         :
-        AlternativesAlgorithm(std::move(routingGraph), settings, travelCostCalculator, travelTimeCalculator) {
-    this->profileStorage = std::move(storage);
-    this->alternativesTDPluginOn = settings.alternativesTDPluginOn;
-    this->alternativesRouteTDRecalculateOn = settings.alternativesRouteTDRecalculateOn;
-    this->altCountsForRecalculation = settings.altCountsForRecalculation;
-    this->useSimilarityParameter = settings.useSimilarityParameter;
-    this->similarityParMultiplyConst = settings.similarityParMultiplyConst;
-    this->similarityPercent = settings.similarityPercent;
+        AlternativesAlgorithm(std::move(routingGraph), settings, travelCostCalculator, travelTimeCalculator),
+        profileStorage(std::move(storage))
+{
+            this->alternativesTDPluginOn = settings.alternativesTDPluginOn;
+            this->alternativesRouteTDRecalculateOn = settings.alternativesRouteTDRecalculateOn;
+            this->altCountsForRecalculation = settings.altCountsForRecalculation;
+            this->useSimilarityParameter = settings.useSimilarityParameter;
+            this->similarityParMultiplyConst = settings.similarityParMultiplyConst;
+            this->similarityPercent = settings.similarityPercent;
 }

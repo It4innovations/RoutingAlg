@@ -7,7 +7,6 @@
 #include "DiffEvoIndividual.h"
 #include "../Routing/Hdf/DataIndex.h"
 #include "../Routing/Data/Indexes/GraphMemory.h"
-#include "../Routing/Algorithms/Base/StaticRoutingAlgorithm.h"
 #include "../Routing/Algorithms/Alternatives/AlternativesPlateauAlgorithm.h"
 #include "../Routing/Tests/IOUtils.h"
 
@@ -62,12 +61,12 @@ private:
 
     void CalculatePopulationCost(std::vector<DiffEvoIndividual> &population);
 
-    void BetterIndividualOfGeneration(std::vector<DiffEvoIndividual> &originGen, std::vector<DiffEvoIndividual> &newGen);
+    void BetterIndividualOfGeneration(std::vector<DiffEvoIndividual> &originGen, std::vector<DiffEvoIndividual> &newGen) const;
 
-    void PrintBestIndividual(std::vector<DiffEvoIndividual> &population, int numberGeneration);
+    void PrintBestIndividual(std::vector<DiffEvoIndividual> &population, int numberGeneration) const;
 
-    std::vector<DiffEvoIndividual> GenerateFirstPopulation();
+    std::vector<DiffEvoIndividual> GenerateFirstPopulation() const;
 
-    std::vector<DiffEvoIndividual> GenerateNewPopulation(std::vector<DiffEvoIndividual> &oldPopulation);
+    std::vector<DiffEvoIndividual> GenerateNewPopulation(std::vector<DiffEvoIndividual> &oldPopulation) const;
 
 };

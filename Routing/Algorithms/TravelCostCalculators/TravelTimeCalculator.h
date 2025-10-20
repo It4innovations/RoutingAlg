@@ -8,7 +8,7 @@ namespace Routing {
         class TravelTimeCalculator {
 
         public:
-            virtual float GetTravelTime(int length, float speedMPS) {
+            virtual float GetTravelTime(int length, float speedMPS) const {
                 return length / speedMPS;
             }
 

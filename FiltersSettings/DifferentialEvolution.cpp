@@ -5,9 +5,7 @@ void DifferentialEvolution::Run(){
 
     LoadRoutingIndex();
 
-    std::vector<DiffEvoIndividual> population;
-
-    population = GenerateFirstPopulation();
+    std::vector<DiffEvoIndividual> population = GenerateFirstPopulation();
 
     CalculatePopulationCost(population);
 
@@ -34,7 +32,6 @@ void DifferentialEvolution::Run(){
 void DifferentialEvolution::CalculatePopulationCost(std::vector<DiffEvoIndividual> &population){
     #pragma omp parallel for
     for(unsigned int i = 0; i < this->countIndividuals; i++){
-        auto alt = Routing::Algorithms::AlternativesPlateauAlgorithm(routingIndex);
 
         Routing::Algorithms::AlgorithmSettings settings;
         settings.filterSettings.longDistanceValue = population.at(i).fromXKmLongPath;
@@ -42,8 +39,7 @@ void DifferentialEvolution::CalculatePopulationCost(std::vector<DiffEvoIndividua
         settings.filterSettings.firstHierarchyJumpLongDistance = population.at(i).firstDistanceKmLongPath;
         settings.filterSettings.secondHierarchyJumpDistance = population.at(i).secondDistanceKmShortPath;
         settings.filterSettings.secondHierarchyJumpLongDistance = population.at(i).secondDistanceKmLongPath;
-
-        alt.SetAlgorithmSettings(settings);
+        auto alt = Routing::Algorithms::AlternativesPlateauAlgorithm(routingIndex, settings);
 
         auto t_start = std::chrono::high_resolution_clock::now();
 
@@ -76,7 +72,7 @@ void DifferentialEvolution::CalculatePopulationCost(std::vector<DiffEvoIndividua
     }
 }
 
-std::vector<DiffEvoIndividual> DifferentialEvolution::GenerateFirstPopulation(){
+std::vector<DiffEvoIndividual> DifferentialEvolution::GenerateFirstPopulation() const {
     std::vector<DiffEvoIndividual> population;
 
     for(unsigned int i = 0; i < this->countIndividuals; i++){
@@ -95,7 +91,7 @@ std::vector<DiffEvoIndividual> DifferentialEvolution::GenerateFirstPopulation(){
     return population;
 }
 
-std::vector<DiffEvoIndividual> DifferentialEvolution::GenerateNewPopulation(std::vector<DiffEvoIndividual> &oldPopulation){
+std::vector<DiffEvoIndividual> DifferentialEvolution::GenerateNewPopulation(std::vector<DiffEvoIndividual> &oldPopulation) const {
     std::vector<DiffEvoIndividual> newPopulation;
 
     for(unsigned int i = 0; i < this->countIndividuals; i++){
@@ -133,36 +129,36 @@ std::vector<DiffEvoIndividual> DifferentialEvolution::GenerateNewPopulation(std:
         fromXKmLongPath = int (fromXKmLongPath + oldPopulation.at(randomIndexSecond).fromXKmLongPath);
 
         //Mutation *F
-        firstDistanceKmLongPath = int(firstDistanceKmLongPath * this->mutation);
-        secondDistanceKmLongPath = int(secondDistanceKmLongPath * this->mutation);
-        firstDistanceKmShortPath = int(firstDistanceKmShortPath * this->mutation);
-        secondDistanceKmShortPath = int(secondDistanceKmShortPath * this->mutation);
-        fromXKmLongPath = int(fromXKmLongPath * this->mutation);
+        firstDistanceKmLongPath = static_cast<int>(firstDistanceKmLongPath * this->mutation);
+        secondDistanceKmLongPath = static_cast<int>(secondDistanceKmLongPath * this->mutation);
+        firstDistanceKmShortPath = static_cast<int>(firstDistanceKmShortPath * this->mutation);
+        secondDistanceKmShortPath = static_cast<int>(secondDistanceKmShortPath * this->mutation);
+        fromXKmLongPath = static_cast<int>(fromXKmLongPath * this->mutation);
 
         //Crossover
         int randomNum = rand() % 100;
         if (randomNum > this->crossover){
-            firstDistanceKmLongPath = (int)oldPopulation.at(i).firstDistanceKmLongPath;
+            firstDistanceKmLongPath = static_cast<int>(oldPopulation.at(i).firstDistanceKmLongPath);
         }
 
         randomNum = rand() % 100;
         if (randomNum > this->crossover){
-            secondDistanceKmLongPath = (int)oldPopulation.at(i).secondDistanceKmLongPath;
+            secondDistanceKmLongPath = static_cast<int>(oldPopulation.at(i).secondDistanceKmLongPath);
         }
 
         randomNum = rand() % 100;
         if (randomNum > this->crossover){
-            firstDistanceKmShortPath = (int)oldPopulation.at(i).firstDistanceKmShortPath;
+            firstDistanceKmShortPath = static_cast<int>(oldPopulation.at(i).firstDistanceKmShortPath);
         }
 
         randomNum = rand() % 100;
         if (randomNum > this->crossover){
-            secondDistanceKmShortPath = (int)oldPopulation.at(i).secondDistanceKmShortPath;
+            secondDistanceKmShortPath = static_cast<int>(oldPopulation.at(i).secondDistanceKmShortPath);
         }
 
         randomNum = rand() % 100;
         if (randomNum > this->crossover){
-            fromXKmLongPath = (int)oldPopulation.at(i).fromXKmLongPath;
+            fromXKmLongPath = static_cast<int>(oldPopulation.at(i).fromXKmLongPath);
         }
 
 
@@ -185,7 +181,7 @@ std::vector<DiffEvoIndividual> DifferentialEvolution::GenerateNewPopulation(std:
 }
 
 void DifferentialEvolution::BetterIndividualOfGeneration(std::vector<DiffEvoIndividual> &originGen,
-                                                         std::vector<DiffEvoIndividual> &newGen){
+                                                         std::vector<DiffEvoIndividual> &newGen) const {
     for(unsigned int i = 0; i < this->countIndividuals; i++){
         if(originGen.at(i).GetCost() > newGen.at(i).GetCost()){
             if(!newGen.at(i).someRouteNotFound) {
@@ -199,7 +195,7 @@ void DifferentialEvolution::BetterIndividualOfGeneration(std::vector<DiffEvoIndi
     }
 }
 
-void DifferentialEvolution::PrintBestIndividual(std::vector<DiffEvoIndividual> &population, int numberGeneration){
+void DifferentialEvolution::PrintBestIndividual(std::vector<DiffEvoIndividual> &population, int numberGeneration) const {
     unsigned int indexBest = 0;
     for(unsigned int i = 0; i < this->countIndividuals; i++){
         if(population.at(i).timeCost < population.at(indexBest).timeCost){
@@ -213,7 +209,6 @@ void DifferentialEvolution::PrintBestIndividual(std::vector<DiffEvoIndividual> &
 }
 
 void DifferentialEvolution::LoadRoutingIndex() {
-    //H5::H5File h5file(HDF_INDEX_PATH, H5F_ACC_RDONLY);
     H5::H5File h5file(pathHDF5, H5F_ACC_RDONLY);
     unique_ptr<DataIndex> dif(new Routing::Hdf::DataIndex(h5file));
     h5file.close();

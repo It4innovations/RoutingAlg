@@ -10,41 +10,33 @@
 #include "../../Data/Utility/TimeWatch.h"
 #include "../Base/Algorithm.h"
 #include "../../Data/Indexes/GraphMemory.h"
-#include "../GraphFilter/GraphFilterGeometry.h"
 
 using Routing::Data::GraphMemory;
 using Routing::Algorithms::Segment;
 using Routing::Algorithms::Result;
 using Routing::Utils::TimeWatch;
 
-namespace Routing {
+namespace Routing::Algorithms {
 
-    namespace Algorithms {
+    class AlternativesAlgorithm : public Algorithm {
+    public:
+        explicit AlternativesAlgorithm(std::shared_ptr<GraphMemory> routingGraph,
+                              const AlgorithmSettings &settings = AlgorithmSettings(),
+                              const TravelCostCalculator *travelCostCalculator = &TravelCostCalculator::Instance(),
+                              const TravelTimeCalculator *travelTimeCalculator = &TravelTimeCalculator::Instance());
 
-        class AlternativesAlgorithm : public Algorithm {
-        public:
-            explicit AlternativesAlgorithm(std::shared_ptr<GraphMemory> routingGraph,
-                                  AlgorithmSettings settings = AlgorithmSettings(),
-                                  TravelCostCalculator *travelCostCalculator = &TravelCostCalculator::Instance(),
-                                  TravelTimeCalculator *travelTimeCalculator = &TravelTimeCalculator::Instance());
+        [[nodiscard]] std::unique_ptr<std::vector<Result>> GetResults(int startId, int endId, unsigned int maxRoutes,
+                                                        bool multiThreading, int startTime = 0) const;
 
-            std::unique_ptr<std::vector<Result>> GetResults(int startId, int endId, unsigned int maxRoutes,
-                                                            bool multiThreading, int startTime = 0);
+        [[nodiscard]] std::unique_ptr<std::vector<Result>> GetResults(int startId, int endId, int startTime = 0) const;
 
-            std::unique_ptr<std::vector<Result>> GetResults(int startId, int endId, int startTime = 0);
+    protected:
+        const TravelCostCalculator *costCalculator;
+        const TravelTimeCalculator *timeCalculator;
 
-            TravelCostCalculator *GetTravelCostCalculator();
-
-            TravelTimeCalculator *GetTravelTimeCalculator();
-
-        protected:
-            TravelCostCalculator *costCalculator;
-            TravelTimeCalculator *timeCalculator;
-
-            virtual std::vector<std::vector<Segment>> GetRoutes(
-                    int startId, int endId, unsigned int maxRoutes, bool multiThreading,
-                    int startTime) = 0;
-        };
-    }
+        virtual std::vector<std::vector<Segment>> GetRoutes(
+                int startId, int endId, unsigned int maxRoutes, bool multiThreading,
+                int startTime) const = 0;
+    };
 }
 
