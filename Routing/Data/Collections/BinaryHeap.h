@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-#include <vector>
 #include <ostream>
 #include <algorithm>
 #include <utility>
@@ -9,195 +7,193 @@
 
 using namespace std;
 
-namespace Routing {
-    namespace Collections {
-        template<class TKey, class TValue>
-        class BinaryHeap {
-        private:
-            const int defaultSize = 8192;
-            std::pair<TKey, TValue> *data;
-            int count = 0;
-            int capacity;
+namespace Routing::Collections {
+    template<class TKey, class TValue>
+    class BinaryHeap {
+    private:
+        const int defaultSize = 8192;
+        std::pair<TKey, TValue> *data;
+        int count = 0;
+        int capacity;
 
-        public:
-            BinaryHeap() {
-                capacity = defaultSize;
-                data = new std::pair<TKey, TValue>[defaultSize];
-            }
+    public:
+        BinaryHeap() {
+            capacity = defaultSize;
+            data = new std::pair<TKey, TValue>[defaultSize];
+        }
 
-            ~BinaryHeap() {
+        ~BinaryHeap() {
+            delete[] data;
+        }
+
+        int Count() const {
+            return count;
+        }
+
+        int GetCapacity() const {
+            return capacity;
+        }
+
+        void SetCapacity(int value) {
+            int previousCapacity = capacity;
+            capacity = std::max(value, count);
+
+            if (capacity != previousCapacity) {
+               auto *resize = new std::pair<TKey, TValue>[capacity * 2];
+                std::copy(data, data + count, resize);
                 delete[] data;
+                data = resize;
+            }
+        }
+
+        void Add(TKey priority, TValue value) {
+            if (count == capacity) {
+                SetCapacity(capacity * 4);
             }
 
-            int Count() {
-                return count;
+            data[count] = std::pair<TKey, TValue>(priority, value);
+            UpHeap(count);
+            count++;
+        }
+
+        std::pair<TKey, TValue> Peek() {
+            return data[0];
+        }
+
+        TKey PeekKey() {
+            return data[0].first;
+        }
+
+        TValue PeekValue() {
+            return data[0].second;
+        }
+
+        TValue Remove() {
+            if (count == 0) {
+                throw;
             }
 
-            int GetCapacity() {
-                return capacity;
-            }
+            std::pair<TKey, TValue> value = data[0];
+            count--;
 
-            void SetCapacity(int value) {
-                int previousCapacity = capacity;
-                capacity = std::max(value, count);
+            data[0] = data[count];
+            DownHeap(0);
 
-                if (capacity != previousCapacity) {
-                    std::pair<TKey, TValue> *resize = new std::pair<TKey, TValue>[capacity * 2];
-                    std::copy(data, data + count, resize);
-                    delete[] data;
-                    data = resize;
+            return value.second;
+        }
+
+        bool Remove(TValue item) {
+            bool removed = false;
+            int index = -1;
+
+            for (int i = 0; i < count; i++) {
+                if (data[i].second == item) {
+                    index = i;
+                    break;
                 }
             }
 
-            void Add(TKey priority, TValue value) {
-                if (count == capacity) {
-                    SetCapacity(capacity * 4);
+            if (index > 0) {
+                for (int i = index; i < count - 1; i++) {
+                    data[i] = data[i + 1];
                 }
-
-                data[count] = std::pair<TKey, TValue>(priority, value);
-                UpHeap(count);
-                count++;
-            }
-
-            std::pair<TKey, TValue> Peek() {
-                return data[0];
-            }
-
-            TKey PeekKey() {
-                return data[0].first;
-            }
-
-            TValue PeekValue() {
-                return data[0].second;
-            }
-
-            TValue Remove() {
-                if (count == 0) {
-                    throw;
-                }
-
-                std::pair<TKey, TValue> value = data[0];
                 count--;
+                removed = true;
+            }
+            return removed;
+        }
 
-                data[0] = data[count];
-                DownHeap(0);
+        bool UpdatePriority(TKey newPriority, TValue item) {
+            bool updated = false;
+            int index = -1;
 
-                return value.second;
+            for (int i = 0; i < count; i++) {
+                if (data[i].second == item) {
+                    index = i;
+                    break;
+                }
             }
 
-            bool Remove(TValue item) {
-                bool removed = false;
-                int index = -1;
-
-                for (int i = 0; i < count; i++) {
-                    if (data[i].second == item) {
-                        index = i;
-                        break;
-                    }
-                }
-
-                if (index > 0) {
-                    for (int i = index; i < count - 1; i++) {
-                        data[i] = data[i + 1];
-                    }
-                    count--;
-                    removed = true;
-                }
-                return removed;
+            if (index >= 0 && data[index].first > newPriority) {
+                data[index].first = newPriority;
+                UpHeap(index);
+                updated = true;
             }
 
-            bool UpdatePriority(TKey newPriority, TValue item) {
-                bool updated = false;
-                int index = -1;
+            return updated;
+        }
 
-                for (int i = 0; i < count; i++) {
-                    if (data[i].second == item) {
-                        index = i;
-                        break;
-                    }
-                }
+        void Print(int limit) {
+            cout.precision(10);
 
-                if (index >= 0 && data[index].first > newPriority) {
-                    data[index].first = newPriority;
-                    UpHeap(index);
-                    updated = true;
-                }
-
-                return updated;
+            if (limit > this->Count()) {
+                limit = this->Count();
             }
-
-            void Print(int limit) {
-                cout.precision(10);
-
-                if (limit > this->Count()) {
-                    limit = this->Count();
-                }
 
                 for (int i = 0; i < limit; ++i) {
                     cout << this->count << " " << data[i].first << " " << data[i].second << endl;
                 }
 
-                cout << endl;
+            cout << endl;
+        }
+
+    private:
+        void UpHeap(int index) {
+            int p = index;
+            int par = Parent(p);
+            std::pair<TKey, TValue> actualData = data[p];
+
+            while (par > -1 && actualData.first < data[par].first) {
+                data[p] = data[par];
+                p = par;
+                par = Parent(p);
             }
 
-        private:
-            void UpHeap(int index) {
-                int p = index;
-                int par = Parent(p);
-                std::pair<TKey, TValue> actualData = data[p];
+            data[p] = actualData;
+        }
 
-                while (par > -1 && actualData.first < data[par].first) {
-                    data[p] = data[par];
-                    p = par;
-                    par = Parent(p);
+        void DownHeap(int index) {
+            int n;
+            int p = index;
+            std::pair<TKey, TValue> actualData = data[p];
+
+            while (true) {
+                int ch1 = Child1(p);
+
+                if (ch1 >= count) {
+                    break;
                 }
 
-                data[p] = actualData;
-            }
+                int ch2 = Child2(p);
 
-            void DownHeap(int index) {
-                int n;
-                int p = index;
-                std::pair<TKey, TValue> actualData = data[p];
-
-                while (true) {
-                    int ch1 = Child1(p);
-
-                    if (ch1 >= count) {
-                        break;
-                    }
-
-                    int ch2 = Child2(p);
-
-                    if (ch2 >= count) {
-                        n = ch1;
-                    } else {
-                        n = data[ch1].first < data[ch2].first ? ch1 : ch2;
-                    }
-
-                    if (actualData.first > data[n].first) {
-                        data[p] = data[n];
-                        p = n;
-                    } else {
-                        break;
-                    }
+                if (ch2 >= count) {
+                    n = ch1;
+                } else {
+                    n = data[ch1].first < data[ch2].first ? ch1 : ch2;
                 }
 
-                data[p] = actualData;
+                if (actualData.first > data[n].first) {
+                    data[p] = data[n];
+                    p = n;
+                } else {
+                    break;
+                }
             }
 
-            static int Parent(int index) {
-                return (index - 1) >> 1;
-            }
+            data[p] = actualData;
+        }
 
-            static int Child1(int index) {
-                return (index << 1) + 1;
-            }
+        static int Parent(int index) {
+            return (index - 1) >> 1;
+        }
 
-            static int Child2(int index) {
-                return (index << 1) + 2;
-            }
-        };
-    }
+        static int Child1(int index) {
+            return (index << 1) + 1;
+        }
+
+        static int Child2(int index) {
+            return (index << 1) + 2;
+        }
+    };
 }
 
