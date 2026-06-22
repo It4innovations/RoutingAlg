@@ -4,8 +4,13 @@
 #define TENPERCENT /10
 #define FIVEPERCENT /20
 
+float Routing::Algorithms::AlternativesPlateauAlgorithm::GetConfiguredSpeed(const Edge *edge, bool useOriginSpeed) {
+    return useOriginSpeed ? edge->GetOriginSpeed() : edge->GetSpeed();
+}
+
 std::vector<std::vector<Segment>> Routing::Algorithms::AlternativesPlateauAlgorithm::GetRoutes(
-        int startId, int endId, unsigned int maxRoutes, bool multiThreading, int startTime) const {
+        int startId, int endId, unsigned int maxRoutes, bool multiThreading, int startTime,
+        bool useOriginSpeed) const {
 
     VisitedNodeHashMap closedSetForth;
     closedSetForth.set_empty_key(std::numeric_limits<int>::min());
@@ -74,12 +79,12 @@ std::vector<std::vector<Segment>> Routing::Algorithms::AlternativesPlateauAlgori
 #pragma omp section
         {
             this->DijkstraForth(openSetForth, closedSetForth, filterGeometryRootForth, edgesSpeed,
-                                settings.filterSettings.allFilterOff);
+                                settings.filterSettings.allFilterOff, useOriginSpeed);
         }
 #pragma omp section
         {
             this->DijkstraBack(openSetBack, closedSetBack, filterGeometryRootBack, edgesSpeed,
-                               settings.filterSettings.allFilterOff);
+                               settings.filterSettings.allFilterOff, useOriginSpeed);
         }
     }
 
@@ -206,7 +211,8 @@ void Routing::Algorithms::AlternativesPlateauAlgorithm::DijkstraForth(BinHeap &o
                                                                       VisitedNodeHashMap &closedSetForth,
                                                                       GraphFilterGeometry plateauFilter,
                                                                       const google::dense_hash_map<int, float> &edgesSpeed,
-                                                                      bool allFilterOff) const {
+                                                                      bool allFilterOff,
+                                                                      bool useOriginSpeed) const {
     //allFilterOff = true;
 
     while (openSetForth.Count() != 0) {
@@ -241,16 +247,18 @@ void Routing::Algorithms::AlternativesPlateauAlgorithm::DijkstraForth(BinHeap &o
 
             if (alternativesTDPluginOn) {
                 if (edgesSpeed.find(edge->edgeId) == edgesSpeed.end()) {
-                    speedMPS = (this->settings.maxVelocity < edge->GetSpeed() ?
-                            this->settings.maxVelocity : edge->GetSpeed()) * Constants::OneDiv3P6;
+                    float edgeSpeed = GetConfiguredSpeed(edge, useOriginSpeed);
+                    speedMPS = (this->settings.maxVelocity < edgeSpeed ?
+                            this->settings.maxVelocity : edgeSpeed) * Constants::OneDiv3P6;
                 } else {
                     float speed = edgesSpeed.find(edge->edgeId)->second;
                     speedMPS = ((this->settings.maxVelocity * Constants::OneDiv3P6) < speed ?
                                 (this->settings.maxVelocity * Constants::OneDiv3P6) : speed);
                 }
             } else {
-                speedMPS = (this->settings.maxVelocity < edge->GetSpeed()
-                        ? this->settings.maxVelocity : edge->GetSpeed()) * Constants::OneDiv3P6;
+                float edgeSpeed = GetConfiguredSpeed(edge, useOriginSpeed);
+                speedMPS = (this->settings.maxVelocity < edgeSpeed
+                        ? this->settings.maxVelocity : edgeSpeed) * Constants::OneDiv3P6;
             }
 
             float travelTime = timeCalculator->GetTravelTime(edge->length, speedMPS);
@@ -277,7 +285,8 @@ void Routing::Algorithms::AlternativesPlateauAlgorithm::DijkstraBack(BinHeap &op
                                                                      VisitedNodeHashMap &closedSetBack,
                                                                      GraphFilterGeometry plateauFilter,
                                                                      const google::dense_hash_map<int, float> &edgesSpeed,
-                                                                     bool allFilterOff) const {
+                                                                     bool allFilterOff,
+                                                                     bool useOriginSpeed) const {
 
     //allFilterOff = true;
 
@@ -313,16 +322,18 @@ void Routing::Algorithms::AlternativesPlateauAlgorithm::DijkstraBack(BinHeap &op
 
             if (alternativesTDPluginOn) {
                 if (edgesSpeed.find(edge->edgeId) == edgesSpeed.end()) {
-                    speedMPS = (this->settings.maxVelocity < edge->GetSpeed()
-                            ? this->settings.maxVelocity : edge->GetSpeed()) * Constants::OneDiv3P6;
+                    float edgeSpeed = GetConfiguredSpeed(edge, useOriginSpeed);
+                    speedMPS = (this->settings.maxVelocity < edgeSpeed
+                            ? this->settings.maxVelocity : edgeSpeed) * Constants::OneDiv3P6;
                 } else {
                     float speed = edgesSpeed.find(edge->edgeId)->second;
                     speedMPS = ((this->settings.maxVelocity * Constants::OneDiv3P6) < speed ?
                                 (this->settings.maxVelocity * Constants::OneDiv3P6) : speed);
                 }
             } else {
-                speedMPS = (this->settings.maxVelocity < edge->GetSpeed() ?
-                        this->settings.maxVelocity : edge->GetSpeed()) * Constants::OneDiv3P6;
+                float edgeSpeed = GetConfiguredSpeed(edge, useOriginSpeed);
+                speedMPS = (this->settings.maxVelocity < edgeSpeed ?
+                        this->settings.maxVelocity : edgeSpeed) * Constants::OneDiv3P6;
             }
 
             float travelTime = timeCalculator->GetTravelTime(edge->length, speedMPS);

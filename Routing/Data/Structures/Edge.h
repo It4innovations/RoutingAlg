@@ -92,6 +92,10 @@ namespace Routing {
             return this->speed;
         };
 
+        float GetOriginSpeed() const {
+            return this->origin_speed;
+        };
+
         void SetSpeed(int new_speed) {
             if (new_speed == RESTART_SPEED) {
                 this->ResetSpeed();

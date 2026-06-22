@@ -44,11 +44,13 @@ namespace Routing::Algorithms {
     private:
         void DijkstraForth(BinHeap &openSetForth, VisitedNodeHashMap &closedSetForth,
                                   GraphFilterGeometry plateauFilter, const google::dense_hash_map<int, float> &edgesSpeed,
-                                  bool allFilterOff) const;
+                                  bool allFilterOff, bool useOriginSpeed) const;
 
         void DijkstraBack(BinHeap &openSetBack, VisitedNodeHashMap &closedSetBack,
                                  GraphFilterGeometry plateauFilter, const google::dense_hash_map<int, float> &edgesSpeed,
-                                 bool allFilterOff) const;
+                                 bool allFilterOff, bool useOriginSpeed) const;
+
+        static float GetConfiguredSpeed(const Edge *edge, bool useOriginSpeed);
 
         std::vector<RouteSolution>
         FindPlateaus(VisitedNodeHashMap &closedSetForth, VisitedNodeHashMap &closedSetBack, int startId, int endId,
@@ -96,7 +98,7 @@ namespace Routing::Algorithms {
 
     protected:
         std::vector<std::vector<Segment>> GetRoutes(int startId, int endId, unsigned int maxRoutes,
-                                                    bool multiThreading, int startTime) const final;
+                                                    bool multiThreading, int startTime, bool useOriginSpeed) const final;
     };
 }
 

@@ -26,7 +26,8 @@ namespace Routing::Algorithms {
                               const TravelTimeCalculator *travelTimeCalculator = &TravelTimeCalculator::Instance());
 
         [[nodiscard]] std::unique_ptr<std::vector<Result>> GetResults(int startId, int endId, unsigned int maxRoutes,
-                                                        bool multiThreading, int startTime = 0) const;
+                                                        bool multiThreading, int startTime = 0,
+                                                        bool useOriginSpeed = false) const;
 
         [[nodiscard]] std::unique_ptr<std::vector<Result>> GetResults(int startId, int endId, int startTime = 0) const;
 
@@ -36,7 +37,6 @@ namespace Routing::Algorithms {
 
         virtual std::vector<std::vector<Segment>> GetRoutes(
                 int startId, int endId, unsigned int maxRoutes, bool multiThreading,
-                int startTime) const = 0;
+                int startTime, bool useOriginSpeed) const = 0;
     };
 }
-

@@ -1,11 +1,12 @@
 #include "AlternativesAlgorithm.h"
 
 std::unique_ptr<std::vector<Result>> Routing::Algorithms::AlternativesAlgorithm::GetResults(
-        int startId, int endId, unsigned int maxRoutes, bool multiThreading, int startTime) const {
+        int startId, int endId, unsigned int maxRoutes, bool multiThreading, int startTime,
+        bool useOriginSpeed) const {
 
     TimeWatch watch(true);
 
-    auto alternatives = this->GetRoutes(startId, endId, maxRoutes, multiThreading, startTime);
+    auto alternatives = this->GetRoutes(startId, endId, maxRoutes, multiThreading, startTime, useOriginSpeed);
 
     if (alternatives.empty()) {
         return nullptr;
@@ -36,7 +37,7 @@ std::unique_ptr<std::vector<Result>> Routing::Algorithms::AlternativesAlgorithm:
 
 std::unique_ptr<std::vector<Result>> Routing::Algorithms::AlternativesAlgorithm::GetResults(int startId, int endId,
                                                                                             int startTime) const {
-    return GetResults(startId, endId, 3, true, startTime);
+    return GetResults(startId, endId, 3, true, startTime, false);
 }
 
 Routing::Algorithms::AlternativesAlgorithm::AlternativesAlgorithm(std::shared_ptr<GraphMemory> routingGraph,
