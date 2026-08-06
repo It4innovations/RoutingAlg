@@ -35,21 +35,21 @@ namespace Routing {
 
             GraphMemory(DataIndex &indexData);
 
-            bool ContainsNode(int nodeId);
+            bool ContainsNode(int nodeId) const;
 
-            const Node &GetNodeById(int nodeId);
+            const Node &GetNodeById(int nodeId) const;
 
-            const Node &GetEndNodeByEdge(const Edge &edge);
+            const Node &GetEndNodeByEdge(const Edge &edge) const;
 
-            const Node &GetStartNodeByEdge(const Edge &edge);
+            const Node &GetStartNodeByEdge(const Edge &edge) const;
 
-            const Edge &GetEdgeById(int edgeId);
+            const Edge &GetEdgeById(int edgeId) const;
 
-            const std::vector<Edge *> GetEdgesIn(int nodeId);
+            const std::vector<Edge *> GetEdgesIn(int nodeId) const;
 
-            const std::vector<Edge *> GetEdgesOut(int nodeId);
+            const std::vector<Edge *> GetEdgesOut(int nodeId) const;
 
-            const std::vector<Edge *> GetEdgesOut(const Node &node);
+            const std::vector<Edge *> GetEdgesOut(const Node &node) const;
 
             Segment EdgeToSegment(int edgeId);
 

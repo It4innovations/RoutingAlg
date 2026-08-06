@@ -1,8 +1,33 @@
 // OpenMP pragmas are handled by the compiler flags
 #include "AlternativesPlateauAlgorithm.h"
 
+#include <atomic>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+
 #define TENPERCENT /10
 #define FIVEPERCENT /20
+
+namespace {
+bool NumericDiagnosticsEnabled() {
+    static const bool enabled = std::getenv("RUTH_ROUTING_NUMERIC_DIAGNOSTICS") != nullptr;
+    return enabled;
+}
+
+void ReportInvalidCost(const char *direction, int actualId, const Routing::Edge *edge,
+                       float speedMPS, float travelTime, float totalCost) {
+    static std::atomic<unsigned int> reports{0};
+    if (!NumericDiagnosticsEnabled() || reports.fetch_add(1, std::memory_order_relaxed) >= 200) {
+        return;
+    }
+    std::fprintf(stderr,
+                 "ROUTING_NUMERIC_DIAGNOSTIC stage=invalid_edge_cost direction=%s actual=%d edge=%d length=%d speed_mps=%g travel_time=%g total_cost=%g\n",
+                 direction, actualId, edge->edgeId, edge->length,
+                 static_cast<double>(speedMPS), static_cast<double>(travelTime),
+                 static_cast<double>(totalCost));
+}
+}
 
 float Routing::Algorithms::AlternativesPlateauAlgorithm::GetConfiguredSpeed(const Edge *edge, bool useOriginSpeed) {
     return useOriginSpeed ? edge->GetOriginSpeed() : edge->GetSpeed();
@@ -265,6 +290,11 @@ void Routing::Algorithms::AlternativesPlateauAlgorithm::DijkstraForth(BinHeap &o
             float totalCost = actualNode.TotalCost + costCalculator->GetTravelCost(edge->length,
                                                                                    travelTime, edge->GetFuncClass());
 
+            if (!(speedMPS > 0.0f) || !std::isfinite(speedMPS) ||
+                !std::isfinite(travelTime) || !std::isfinite(totalCost)) {
+                ReportInvalidCost("forth", actualId, edge, speedMPS, travelTime, totalCost);
+            }
+
             auto node2Find = closedSetForth.find(node2.id);
 
             if (node2Find == closedSetForth.end()) {
@@ -340,6 +370,11 @@ void Routing::Algorithms::AlternativesPlateauAlgorithm::DijkstraBack(BinHeap &op
             float totalCost = actualNode.TotalCost +
                               costCalculator->GetTravelCost(edge->length, travelTime, edge->GetFuncClass());
 
+            if (!(speedMPS > 0.0f) || !std::isfinite(speedMPS) ||
+                !std::isfinite(travelTime) || !std::isfinite(totalCost)) {
+                ReportInvalidCost("back", actualId, edge, speedMPS, travelTime, totalCost);
+            }
+
             auto node2Find = closedSetBack.find(node2.id);
 
             if (node2Find == closedSetBack.end()) {
@@ -379,7 +414,9 @@ std::vector<Routing::Algorithms::RouteSolution> Routing::Algorithms::Alternative
                     intersectionId = startId;
                     auto startNode = closedSetForth.find(startId);
                     intersectionForthNode.second = startNode->second;
-                    processedNodeIds.insert(intersectionForthNode.first);
+                    if (intersectionForthNode.first != intersectionId) {
+                        processedNodeIds.insert(intersectionForthNode.first);
+                    }
                 }
             }
         }

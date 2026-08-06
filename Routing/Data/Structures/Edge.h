@@ -47,7 +47,7 @@ namespace Routing {
                 edgeData(other.edgeData),
                 endNode(other.endNode),
                 startNodePtr(other.startNodePtr),
-                speed(other.speed),
+                speed(other.speed.load(std::memory_order_relaxed)),
                 origin_speed(other.origin_speed) {
             // Move constructor implementation
         }
@@ -57,14 +57,14 @@ namespace Routing {
                 endNode(other.endNode) {
             this->edgeId = other.edgeId;
             this->length = other.length;
-            this->speed = other.speed;
+            this->speed.store(other.speed.load(std::memory_order_relaxed), std::memory_order_relaxed);
             this->origin_speed = other.origin_speed;
             //TODO both nodes ptr, edgeData
         }
         Edge &operator=(const Edge &other) {
             this->edgeId = other.edgeId;
             this->length = other.length;
-            this->speed = other.speed;
+            this->speed.store(other.speed.load(std::memory_order_relaxed), std::memory_order_relaxed);
             this->origin_speed = other.origin_speed;
             //TODO
             //this->edgeData = other.edgeData;
@@ -74,7 +74,8 @@ namespace Routing {
 
         bool operator==(const Edge &other) const {
             return this->edgeId == other.edgeId && this->length == other.length &&
-                   this->speed == other.speed &&
+                   this->speed.load(std::memory_order_relaxed) ==
+                       other.speed.load(std::memory_order_relaxed) &&
                    this->origin_speed == other.origin_speed &&
                    this->edgeData == other.edgeData && this->endNode.endNodePtr == other.endNode.endNodePtr;
         }
@@ -83,13 +84,13 @@ namespace Routing {
             os << "EId: " << edge.edgeId
                << // " En: " << edge.endNode->endNodePtr->id << " Sn: " << edge.startNodePtr->id <<
                ", Length: " << edge.length << ", Edata: " << edge.edgeData <<
-               ", speed: " << edge.speed << std::endl;
+               ", speed: " << edge.speed.load(std::memory_order_relaxed) << std::endl;
 
             return os;
         }
 
         float GetSpeed() const {
-            return this->speed;
+            return this->speed.load(std::memory_order_relaxed);
         };
 
         float GetOriginSpeed() const {
@@ -100,11 +101,11 @@ namespace Routing {
             if (new_speed == RESTART_SPEED) {
                 this->ResetSpeed();
             }
-            else this->speed = new_speed;
+            else this->speed.store(new_speed, std::memory_order_relaxed);
         }
 
         void ResetSpeed() {
-            this->speed = this->origin_speed;
+            this->speed.store(this->origin_speed, std::memory_order_relaxed);
         };
 
         float GetSpeedMPS() const { return this->edgeData->speed / SPEED_CONS; };
@@ -132,7 +133,7 @@ namespace Routing {
         const EdgeData& GetEdgeData() const { return *this->edgeData; };
 
     private:
-        int speed;
+        std::atomic<int> speed;
         int origin_speed;
         constexpr static float SPEED_CONS = 3.6;
     };

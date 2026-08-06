@@ -315,6 +315,10 @@ target_link_libraries(routing-cli routing)
 add_executable(routing-alt main-alt.cpp)
 target_link_libraries(routing-alt routing)
 
+# Bulk OD-pair benchmark used by routing_filter_benchmark.
+add_executable(routing-filter-benchmark main-filter-benchmark.cpp)
+target_link_libraries(routing-filter-benchmark routing)
+
 # Define paths to test data
 set(HDF_PROFILE_PATH "${PROJECT_SOURCE_DIR}/data/speed_profiles/speed_profiles_alias.h5")
 set(HDF_INDEX_PATH "${PROJECT_SOURCE_DIR}/data/routing_indexes/CZE-1528295206-proc-20180724134457.hdf")

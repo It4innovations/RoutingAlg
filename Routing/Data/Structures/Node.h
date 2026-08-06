@@ -59,7 +59,11 @@ namespace Routing {
         inline float GetLongitude(void) const { return this->longitude; };
 
     private:
-        const float coordinateDividor = 1E6f; // 10^6
+        // This must not be an instance member: latitude and longitude are
+        // initialized before non-static data members declared after them.
+        // Reading an instance divisor from ConvertE6IntToFloat during their
+        // initialization was an uninitialized read in optimized builds.
+        static constexpr float coordinateDividor = 1E6f; // 10^6
 
         inline float ConvertE6IntToFloat(const int value) const {
             return value / this->coordinateDividor;
@@ -67,5 +71,4 @@ namespace Routing {
 
     };
 }
-
 

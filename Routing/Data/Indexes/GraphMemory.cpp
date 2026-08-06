@@ -80,54 +80,47 @@ Routing::Data::GraphMemory::~GraphMemory() {
     this->nodeIdStore.clear();
 }
 
-bool Routing::Data::GraphMemory::ContainsNode(int nodeId) {
+bool Routing::Data::GraphMemory::ContainsNode(int nodeId) const {
     return this->nodeIdStore.find(nodeId) != this->nodeIdStore.end();
 }
 
-const Routing::Node &Routing::Data::GraphMemory::GetNodeById(int nodeId) {
-    auto node_ptr = this->nodeIdStore[nodeId];
-
-    if (node_ptr == nullptr) {
+const Routing::Node &Routing::Data::GraphMemory::GetNodeById(int nodeId) const {
+    const auto node = this->nodeIdStore.find(nodeId);
+    if (node == this->nodeIdStore.end() || node->second == nullptr) {
         throw NodeNotFoundException(nodeId);
     }
-
-    return *node_ptr;
+    return *node->second;
 }
 
-const Routing::Edge &Routing::Data::GraphMemory::GetEdgeById(int edgeId) {
-    auto edge_ptr = this->edgeIdStore[edgeId];
-
-    if (edge_ptr == nullptr) {
-        throw NodeNotFoundException(edgeId);
+const Routing::Edge &Routing::Data::GraphMemory::GetEdgeById(int edgeId) const {
+    const auto edge = this->edgeIdStore.find(edgeId);
+    if (edge == this->edgeIdStore.end() || edge->second == nullptr) {
+        throw EdgeNotFoundException(edgeId);
     }
-
-    return *edge_ptr;
+    return *edge->second;
 }
 
 void Routing::Data::GraphMemory::SetEdgeSpeed(int edgeId, float speed) {
-    auto edge_ptr = this->edgeIdStore[edgeId];
-
-    if (edge_ptr == nullptr) {
+    const auto edge = this->edgeIdStore.find(edgeId);
+    if (edge == this->edgeIdStore.end() || edge->second == nullptr) {
         throw EdgeNotFoundException(edgeId);
     }
-
-    //set new speed to currently unused store speed value
-    const_cast<Edge *>(edge_ptr)->SetSpeed(speed);
+    const_cast<Edge *>(edge->second)->SetSpeed(speed);
 }
 
-const std::vector<Routing::Edge *> Routing::Data::GraphMemory::GetEdgesIn(int nodeId) {
-    return this->nodeIdStore[nodeId]->GetEdgesIn();
+const std::vector<Routing::Edge *> Routing::Data::GraphMemory::GetEdgesIn(int nodeId) const {
+    return this->GetNodeById(nodeId).GetEdgesIn();
 }
 
-const std::vector<Routing::Edge *> Routing::Data::GraphMemory::GetEdgesOut(int nodeId) {
-    return this->nodeIdStore[nodeId]->GetEdgesOut();
+const std::vector<Routing::Edge *> Routing::Data::GraphMemory::GetEdgesOut(int nodeId) const {
+    return this->GetNodeById(nodeId).GetEdgesOut();
 }
 
-const Routing::Node &Routing::Data::GraphMemory::GetEndNodeByEdge(const Edge &edge) {
+const Routing::Node &Routing::Data::GraphMemory::GetEndNodeByEdge(const Edge &edge) const {
     return *edge.endNode.endNodePtr;
 }
 
-const Routing::Node &Routing::Data::GraphMemory::GetStartNodeByEdge(const Edge &edge) {
+const Routing::Node &Routing::Data::GraphMemory::GetStartNodeByEdge(const Edge &edge) const {
     return *edge.startNodePtr;
 }
 
@@ -166,7 +159,7 @@ std::vector<Routing::GpsRectangle> Routing::Data::GraphMemory::GetBoundingBoxes(
     return ret;
 }
 
-const std::vector<Routing::Edge *> Routing::Data::GraphMemory::GetEdgesOut(const Routing::Node &node) {
+const std::vector<Routing::Edge *> Routing::Data::GraphMemory::GetEdgesOut(const Routing::Node &node) const {
     return node.GetEdgesOut();
 }
 
