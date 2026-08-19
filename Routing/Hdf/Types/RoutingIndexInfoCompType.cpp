@@ -77,7 +77,7 @@ H5::CompType Routing::IndexH5Type::NodeRawType() {
 
     itype.insertMember("id", offsetof(Routing::NodeRaw, id), H5::PredType::NATIVE_INT32);
     itype.insertMember("latitudeInt", offsetof(Routing::NodeRaw, latitudeInt), H5::PredType::NATIVE_INT32);
-    itype.insertMember("longtitudeInt", offsetof(Routing::NodeRaw, longitudeInt), H5::PredType::NATIVE_INT32);
+    itype.insertMember("longitudeInt", offsetof(Routing::NodeRaw, longitudeInt), H5::PredType::NATIVE_INT32);
     itype.insertMember("edgeOutCount", offsetof(Routing::NodeRaw, edgesOutCount),
                        H5::PredType::NATIVE_UCHAR); // CAUTION: This type has to correspond with Definitions.h header!
     itype.insertMember("edgeOutIndex", offsetof(Routing::NodeRaw, edgesOutIndex), H5::PredType::NATIVE_INT32);

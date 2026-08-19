@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(Routing)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 #
 # Compiler flags
 #
@@ -315,9 +319,9 @@ target_link_libraries(routing-cli routing)
 add_executable(routing-alt main-alt.cpp)
 target_link_libraries(routing-alt routing)
 
-# Bulk OD-pair benchmark used by routing_filter_benchmark.
-add_executable(routing-filter-benchmark main-filter-benchmark.cpp)
-target_link_libraries(routing-filter-benchmark routing)
+# Add alternative-routing benchmark endpoint
+add_executable(routing-alt-benchmark main-alt-benchmark.cpp)
+target_link_libraries(routing-alt-benchmark routing)
 
 # Define paths to test data
 set(HDF_PROFILE_PATH "${PROJECT_SOURCE_DIR}/data/speed_profiles/speed_profiles_alias.h5")
